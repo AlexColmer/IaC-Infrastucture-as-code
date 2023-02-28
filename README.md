@@ -15,10 +15,11 @@
 ## Orchetration 
 - Orchestration. Orchestration means arranging or coordinating multiple systems
 ## Tools
-- ![Alt text](../Images/IaC%20Tools.png)
+![Alt text](IaC%20Tools.png)
 ## who is using it
 - 
 ## Terraform- Ansible
+- Terraform is preferable for containerized solutions deployed for provisioning software within a cloud platform. In comparison, Ansible helps users gain reasonable control over enterprise devices and explore methods for deploying underlying components
 ## on prem - Hybrid - Cloud
 ## What other tools are avliable 
 ## push vs pull config 
