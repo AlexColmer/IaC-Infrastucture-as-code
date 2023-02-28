@@ -106,3 +106,18 @@ sudo apt-add-repository ppa:ansible/ansible
 sudo apt-get install ansible -y
 ```
 - This will install ansible
+
+## Step 5
+- make sure you can ssh into web from controller vm with `ssh vagnrant@(web IP)`
+- then exit back to contorller and run `cd /etc/ansible`
+- after this run the code `sudo ansible -m ping web`
+##  step 6 if you get failed result 
+- go into web with the command above and run 
+```
+sudo nano authorized_keys #
+sudo nano sshd_config # uncomment this line - PermitRootLogin prohibit-password and this - PasswordAuthentication yes
+
+sudo systemctl restart ssh
+ 
+```
+then go back into contorller and run `sudo nano ansible.cfg` and run this command line in the file `host_key_checking = false`
