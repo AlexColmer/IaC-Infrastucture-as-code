@@ -121,3 +121,5 @@ sudo systemctl restart ssh
  
 ```
 then go back into contorller and run `sudo nano ansible.cfg` and run this command line in the file `host_key_checking = false`
+
+if it is all good run the command `sudo ansible -m ping web` you houdl get this result ![](Working.png)
