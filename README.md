@@ -24,7 +24,7 @@
 ## What other tools are avliable 
 ## push vs pull config 
 - In the pull method, the to be configured server pulls its configuration from the controlling server whereas the push method, the controlling server pushes the configuration to the destination system.
-
+![Alt text](Ansible%20diagram.png)
 # How to get three machines running and ansible on the controller machine 
 
 ## Step 1
@@ -123,3 +123,184 @@ sudo systemctl restart ssh
 then go back into contorller and run `sudo nano ansible.cfg` and run this command line in the file `host_key_checking = false`
 
 if it is all good run the command `sudo ansible -m ping web` you houdl get this result ![](Working.png)
+
+# Getting nginx working 
+## step one 
+- Type in `sudo nano (name of your playbook).yml`
+in this file write this code
+```
+# Create a playbook to configure nginx web server in web machine
+
+# Let's add --- 3 dashes to start  YAML file
+---
+
+# Where do we want this playbook to run (ansible controller)
+# Add the name of the host
+- hosts: web
+
+# Find the facts
+  gather_facts: yes
+# We need admin access
+  become: true
+
+# Add instructions to perform the task
+# Intsall nginx in web machine
+  tasks:
+  - name: Install Nginx in web-server
+    apt: pkg=nginx state=present
+# ensure nginx is running - status is running 
+```
+- this will get nginx running 
+- To make sure it is running use this command `sudo ansible web -a "systemctl status nginx"`
+- You should see this if it is working 
+![Alt text](Nginx%20running%20.png)
+# Getting app to work with playbook 
+## step 1
+- make a new playbook with same naming convention as before
+- in this playbook write this code 
+```
+# This is to install node for the app to
+---
+# Where is this playbook going to run
+
+# Adding the name of the host
+- hosts: web
+
+# Find the facts
+  gather_facts: yes
+# We need admin access
+  become: true
+# Add instructions to perform the task
+# Install nginx in web machine
+
+# Ensure that Node is running - status is running
+
+  tasks:
+  - name: Clone a github repository
+    git:
+      repo: https://github.com/AlexColmer/tech201_vertualisation.git
+      dest:      C:\Users\alexa\Desktop\Sparta_Global\Traing_courses\tech201_vertualisation\tech201_vertualisation\app\app
+      clone: yes
+      update: yes
+
+  tasks:
+  - name: install node
+    apt: pkg=nodejs state=present update_cache=yes
+  - name: install npm
+    apt: pkg=npm state=present update_cache=yes
+
+  tasks:
+  - name: Starting the app
+    shell: |
+      cd /home/vagrant/app/app/app
+      npm install
+      pm2 kill
+      npm start
+      nohup npm start 2>/dev/null 1>/dev/null&
+
+```
+after running the code `sudo ansible-playbook (name of playbook).yml` you should get this out put 
+
+![Alt text](Working%20app.png)
+
+# setting up the app to work with the db
+## step 1
+- install mongodb with a playbook 
+```
+# create a playbook to configure/install mongodb in db machine
+# name of the host/node
+---
+- hosts: db
+# let's get some facts
+  gather_facts: yes
+#admin access
+  become: true
+# add instructions - tasks#
+  tasks:
+  - name: Install mongodb latest version
+    apt: pkg=mongodb state=present
+
+```
+- then you will need to use a play book to set up the ip in mongodb to be access anywhere 
+```
+---
+
+- hosts: db
+
+  gather_facts: yes
+
+  become: true
+
+  tasks:
+  - name: install mongodb
+    apt: pkg=mongodb state=present
+
+  - name: Remove mongodb file (delete file)
+    file:
+      path: /etc/mongodb.conf
+      state: absent
+
+  - name: Touch a file, using symbolic modes to set the permissions (equivalent to 0644)
+    file:
+      path: /etc/mongodb.conf
+      state: touch
+      mode: u=rw,g=r,o=r
+
+
+  - name: Insert multiple lines and Backup
+    blockinfile:
+      path: /etc/mongodb.conf
+      block: |
+        # mongodb.conf
+        storage:
+          dbPath: /var/lib/mongodb
+          journal:
+            enabled: true
+        systemLog:
+          destination: file
+          logAppend: true
+          path: /var/log/mongodb/mongod.log
+        net:
+          port: 27017
+          bindIp: 0.0.0.0
+
+  - name: Restart mongodb
+    become: true
+    shell: systemctl restart mongodb
+
+  - name: enable mongodb
+    become: true
+    shell: systemctl enable mongodb
+
+  - name: start mongodb
+    become: true
+    shell: systemctl start mongodb
+
+```
+use this comand to make sure this is running `sudo ansible-playbook mongo-playbook.yml`
+
+- if this runs then you will need to add a line to your node playbook to get the app runnig with posts 
+```
+---
+- hosts: web
+  gather_facts: yes
+  become: true
+
+  tasks:
+  - name: Add environmental variable
+    shell:  echo 'export DB_HOST="mongodb://192.168.33.11:27017/posts"' >> ~/.bashrc && source .bashrc
+    args:
+      executable: /bin/bash
+  - name: Install Node
+    apt: pkg=nodejs state=present update_cache=yes
+  - name: Start the app
+    shell: |
+      cd /home/vagrant/app/app/app
+      npm install
+      node seeds/seed.js
+      npm start
+    environment:
+      DB_HOST: mongodb://192.168.33.11:27017/posts
+```
+
+if this is written correctly then you should see posts runnig in your browser
