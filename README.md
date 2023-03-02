@@ -304,3 +304,70 @@ use this comand to make sure this is running `sudo ansible-playbook mongo-playbo
 ```
 
 if this is written correctly then you should see posts runnig in your browser
+
+# Getting an ec2 instance done automaticlaly 
+- creat a new playbook called ec2.yml and in this playbok add this code
+```
+---
+
+- hosts: localhost
+  connection: local
+  gather_facts: False
+
+  vars:
+    key_name: {key name}
+    region: eu-west-1
+    image: ami-0ab46afa7fe9b2e96
+    id: "alex_tech201_playbook_app"
+    sec_group: "sg-0d07d38ae9fe6fb0e"
+    ansible_python_interpreter: /usr/bin/python3
+
+  tasks:
+
+    - name: Facts
+      block:
+
+      - name: Get instances facts
+        ec2_instance_facts:
+          aws_access_key: "{{aws_access_key}}"
+          aws_secret_key: "{{aws_secret_key}}"
+          region: "{{ region }}"
+        register: result
+
+      - name: Instances ID
+        debug:
+          msg: "ID: {{ item.instance_id }} - State: {{ item.state.name }} - Public DNS: {{ item.public_dns_name }}"
+        loop: "{{ result.instances }}"
+
+      tags: always
+
+
+    - name: Provisioning EC2 instances
+      block:
+
+      - name: Upload public key to AWS
+        ec2_key:
+          name: "{{ key_name }}"
+          key_material: "{{ lookup('file', '~/.ssh/{{ key_name }}.pub') }}"
+          region: "{{ region }}"
+          aws_access_key: "{{aws_access_key}}"
+          aws_secret_key: "{{aws_secret_key}}"
+
+
+      - name: Provision instance(s)
+        ec2:
+          aws_access_key: "{{aws_access_key}}"
+          aws_secret_key: "{{aws_secret_key}}"
+          key_name: "{{ key_name }}"
+          id: "{{ id }}"
+          group_id: "{{ sec_group }}"
+          image: "{{ image }}"
+          instance_type: t2.micro
+          region: "{{ region }}"
+          wait: true
+          count: 1
+          instance_tags:
+            Name: alex_tech201_playbook_app
+
+      tags: ['never', 'create_ec2']
+``` 
