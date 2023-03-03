@@ -306,7 +306,11 @@ use this comand to make sure this is running `sudo ansible-playbook mongo-playbo
 if this is written correctly then you should see posts runnig in your browser
 
 # Getting an ec2 instance done automaticlaly 
-- creat a new playbook called ec2.yml and in this playbok add this code
+- before doing this you will need ansible to recognise yopu access and secert keys you do this by stroing them in a vault. 
+- you will need to create a new folder structure with goup_vars then in that `all` and then in their you need a file called pass.yml
+- to do this we will need to run this command `sudo ansible-vault create pass.yml`
+when this is run you need to set a password and then insert your access and secret keys into the vault. 
+- then creat a new playbook called ec2.yml and in this playbok add this code.
 ```
 ---
 
