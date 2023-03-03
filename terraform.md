@@ -1,5 +1,5 @@
 # Terraform
-
+![Alt text](IaC.png)
 ## How to set up terraform
 
 ### step 1
