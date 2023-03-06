@@ -41,3 +41,102 @@ resource "aws_instance" "app_instance" {
 - to make sure all the synatx is correct run this code `terraform plan` 
 
 then run `terraform apply`
+
+# How to get a ec2 instacne runnig with your own vpc subnet and security groups 
+```
+# launch ec2
+# which cloud provider - aws
+provider "aws" {
+    region = "eu-west-1"
+}
+resource "aws_vpc" "alex_terraform_vpc" {
+  cidr_block       = "10.0.0.0/16"
+  
+
+  tags = {
+    Name = "alex_terraform_vpc"
+  }
+}
+resource "aws_internet_gateway" "gw" {
+  vpc_id = var.vpc_id
+
+  tags = {
+    Name = "alex-tech201-IG-terraform"
+  }
+}
+
+resource "aws_subnet" "alex_terraform_vpc" {
+  vpc_id     = var.vpc_id
+  cidr_block = "10.0.1.0/24"
+ 
+
+  tags = {
+    Name = "alex-tech201-terraform-subnet"
+  }
+}
+
+
+resource "aws_route_table" "r" {
+  vpc_id = var.vpc_id
+
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = var.ig_id
+  }
+
+  tags = {
+    Name = "alex-tehc201-terraform-ig"
+  }
+}
+
+resource "aws_route_table_association" "a" {
+  subnet_id      = var.subnet_id
+  route_table_id = var.rt_id
+}
+
+resource "aws_security_group" "alex_tech201_app_sg_ports_22_80_3000" {
+  name = "alex-tech201-sg-terraform"
+  description = "alex_tech201_app_sg_ports_22_80_3000"
+  vpc_id = var.vpc_id
+  ingress {
+    from_port = "80"
+    to_port = "80"
+    protocol = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+   ingress { 
+    from_port = "22"
+    to_port = "22"
+    protocol = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+   }
+    ingress {
+     from_port = "3000"
+     to_port = "3000"
+     protocol = "tcp"
+     cidr_blocks = ["0.0.0.0/0"]
+  }  
+   egress {
+    from_port = 0
+    to_port = 0
+    protocol = "-1"
+    cidr_blocks = ["0.0.0.0/0"] 
+  }
+  tags = {
+    Name = var.public_sg
+    }
+}
+
+resource "aws_instance" "app_instance" {
+  ami = var.webapp_ami_id
+  instance_type = "t2.micro"
+  associate_public_ip_address = true
+  key_name = var.key_id
+  subnet_id = var.subnet_id
+  vpc_security_group_ids = [var.sg_id]
+  tags = {
+    Name = var.name_id
+ }
+}
+
+```
