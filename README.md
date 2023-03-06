@@ -16,11 +16,6 @@
 ## Tools
 ![Alt text](IaC%20Tools.png)
 
-## Terraform- Ansible
-- Terraform is preferable for containerized solutions deployed for provisioning software within a cloud platform. In comparison, Ansible helps users gain reasonable control over enterprise devices and explore methods for deploying underlying components
-## on prem - Hybrid - Cloud
-## What other tools are avliable 
-## push vs pull config 
 - In the pull method, the to be configured server pulls its configuration from the controlling server whereas the push method, the controlling server pushes the configuration to the destination system.
 ![Alt text](Ansible%20diagram.png)
 # How to get three machines running and ansible on the controller machine 
