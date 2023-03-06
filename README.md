@@ -8,16 +8,14 @@
 - With IaC, configuration files are created that contain your infrastructure specifications, which makes it easier to edit and distribute configurations
 ## when do we use it 
 - It helps you to align development and operations because both teams can use the same description of the application deployment, supporting a DevOps approach. The same deployment process should be used for every environment, including your production environment.
-## how do we use it 
-- 
+
 ## Confiduration management 
 - In the technology world, configuration management is an IT management process that tracks individual configuration items of an IT system.
 ## Orchetration 
 - Orchestration. Orchestration means arranging or coordinating multiple systems
 ## Tools
 ![Alt text](IaC%20Tools.png)
-## who is using it
-- 
+
 ## Terraform- Ansible
 - Terraform is preferable for containerized solutions deployed for provisioning software within a cloud platform. In comparison, Ansible helps users gain reasonable control over enterprise devices and explore methods for deploying underlying components
 ## on prem - Hybrid - Cloud
