@@ -18,6 +18,11 @@
 
 - In the pull method, the to be configured server pulls its configuration from the controlling server whereas the push method, the controlling server pushes the configuration to the destination system.
 ![Alt text](Ansible%20diagram.png)
+
+# confifuraion managment 
+- Configuration Management is the process of maintaining systems, such as computer hardware and software, in a desired state. 
+# orchestration 
+- Orchestration is the process of coordinating multiple automation pipelines and integrating different toolsets
 # How to get three machines running and ansible on the controller machine 
 
 ## Step 1
@@ -27,9 +32,6 @@
 ```
 # ansible-tech201
 
-
-# -*- mode: ruby -*-
- # vi: set ft=ruby :
  
  # All Vagrant configuration is done below. The "2" in Vagrant.configure
  # configures the configuration version (we support older styles for
